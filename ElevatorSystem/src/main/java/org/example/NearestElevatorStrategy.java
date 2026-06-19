@@ -11,7 +11,10 @@ public class NearestElevatorStrategy implements ElevatorSelectionStrategy{
         for(Elevator elevator: elevators){
             if(canServe(elevator, reqFloor, reqDirection)){
                 int dist = Math.abs(reqFloor - elevator.getCurrentFloor());
-                if(dist < minDist) bestElevator = elevator;
+                if(dist < minDist){
+                    minDist = dist;
+                    bestElevator = elevator;
+                }
             }
         }
 

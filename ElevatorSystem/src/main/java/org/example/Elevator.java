@@ -18,7 +18,10 @@ public class Elevator implements Runnable {
 
     }
 
-
+    public int getId(){
+        return id;
+    }
+    
     public int getCurrentFloor(){
         return this.currentFloor;
     }
@@ -27,9 +30,13 @@ public class Elevator implements Runnable {
         return this.direction;
     }
 
-    public void addRequest(int floor){
+    public synchronized void addRequest(int floor){
         System.out.println("Elevator " + id + " has accepted request " + floor);
         this.requests.add(floor);
+    }
+
+    public synchronized boolean isIdle(){
+        return requests.isEmpty() && direction == ElevatorDirection.IDLE;
     }
 
     @Override
@@ -37,12 +44,18 @@ public class Elevator implements Runnable {
         System.out.println("Elevator " + id + " is started.");
         while(active){
             if(requests.isEmpty()){
+                direction = ElevatorDirection.IDLE;
                 try{
                     Thread.sleep(100);
                 }catch (InterruptedException e){
                     Thread.currentThread().interrupt();
                 }
                 continue;
+            }
+
+            if(requests.remove(currentFloor)){
+                simulateDoor();
+                System.out.println("Elevator " + id + " is stopping at floor " + currentFloor);
             }
 
             //System.out.println("Elevator " + id + " is running.");

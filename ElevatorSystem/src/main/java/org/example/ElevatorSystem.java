@@ -7,37 +7,38 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ElevatorSystem {
-    List<Elevator> elevators;
-    ElevatorSelectionStrategy selectionStrategy;
-    ExecutorService executorService;
-    private static volatile ElevatorSystem INSTANCE = null;
+    private List<Elevator> elevators;
+    private ElevatorSelectionStrategy selectionStrategy;
+    private ExecutorService executorService;
+    private static volatile ElevatorSystem INSTANCE = new ElevatorSystem();
 
-    private ElevatorSystem(int numElevators, ElevatorSelectionStrategy strategy){
+    private ElevatorSystem(){
+        this.elevators = new ArrayList<>();
+    }
+
+    public void init(int numElevators, ElevatorSelectionStrategy strategy){
         this.executorService = Executors.newFixedThreadPool(numElevators);
         this.selectionStrategy = strategy;
 
-        this.elevators = new ArrayList<>();
         for(int i=1; i<=numElevators; i++) {
             Elevator elevator = new Elevator(i);
             elevators.add(elevator);
         }
+        System.out.println("System initiallized.");
     }
 
-    public static ElevatorSystem getINSTANCE(int numElevators, ElevatorSelectionStrategy strategy){
-        if(INSTANCE == null){
-            synchronized (ElevatorSystem.class){
-                if(INSTANCE == null){
-                    INSTANCE = new ElevatorSystem(numElevators, strategy);
-                }
-            }
-        }
+    public static ElevatorSystem getInstance(){
         return INSTANCE;
     }
 
-    public Elevator submitRequest(int reqFloor, ElevatorDirection reqDirection){
+    public int submitRequest(int reqFloor, ElevatorDirection reqDirection){
         Elevator elevator = selectionStrategy.selectElevator(elevators, reqFloor, reqDirection);
         elevator.addRequest(reqFloor);
-        return elevator;
+        return elevator.getId();
+    }
+
+    public void pressFloorButton(int elevatorId, int destFloor){
+        elevators.get(elevatorId-1).addRequest(destFloor);
     }
 
     public void start(){
@@ -46,7 +47,29 @@ public class ElevatorSystem {
         }
     }
 
+    public void waitUntilIdle(){
+        while (true) {
+            boolean busy = false;
+            for (Elevator elevator : elevators) {
+                if (!elevator.isIdle()) {
+                    busy = true;
+                    break;
+                }
+            }
+            if (!busy) {
+                break;
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
     public void shutdownSystem(){
+        System.out.println("Shutting down the system.");
         for(Elevator elevator: elevators) elevator.shutdown();
 
         executorService.shutdown();
