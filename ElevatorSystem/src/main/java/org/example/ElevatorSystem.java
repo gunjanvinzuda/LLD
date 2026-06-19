@@ -47,7 +47,7 @@ public class ElevatorSystem {
         }
     }
 
-    public void waitUntilIdle(){
+    private void waitUntilIdle(){
         while (true) {
             boolean busy = false;
             for (Elevator elevator : elevators) {
@@ -69,6 +69,7 @@ public class ElevatorSystem {
     }
 
     public void shutdownSystem(){
+        waitUntilIdle();
         System.out.println("Shutting down the system.");
         for(Elevator elevator: elevators) elevator.shutdown();
 

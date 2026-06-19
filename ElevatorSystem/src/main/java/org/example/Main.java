@@ -24,7 +24,6 @@ public class Main {
         simulateTime(6000);
         system.pressFloorButton(elevator8, 2);
 
-        system.waitUntilIdle();
         system.shutdownSystem();
     }
 }
