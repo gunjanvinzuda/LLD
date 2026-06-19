@@ -1,15 +1,22 @@
 package org.example.State;
 
 import org.example.AtmSystem;
-import org.example.ChainOfReposnsibility.DispenserChain;
+import org.example.ChainOfResponsibility.DispenserChain;
+import java.math.BigDecimal;
 
 public class WithdrawState extends AtmState{
     @Override
     public void withdrawMoney(AtmSystem atm, int amount) {
-        DispenserChain chain = atm.getChain();
-        double balance = atm.getBalance();
+        if(amount <= 0) {
+            System.out.println("WithdrawState: withdrawMoney(): Invalid amount. Amount must be greater than 0.");
+            atm.setState(new ExitState());
+            return;
+        }
 
-        if(amount <= balance && chain.canDispense(amount)){
+        DispenserChain chain = atm.getChain();
+        BigDecimal balance = atm.getBalance();
+
+        if(balance.compareTo(BigDecimal.valueOf(amount)) >= 0 && chain.canDispense(amount)){
            try{
                chain.dispenseNotes(amount);
                atm.deductAmount(amount);
@@ -17,7 +24,6 @@ public class WithdrawState extends AtmState{
                System.out.println("WithdrawState: withdrawMoney(): "+e.getMessage());
            }
         }else{
-            //TODO:
             System.out.println("WithdrawState: withdrawMoney(): Request cannot be served.");
         }
         atm.setState(new ExitState());

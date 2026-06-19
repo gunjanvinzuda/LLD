@@ -3,13 +3,22 @@ package org.example.State;
 import org.example.AtmSystem;
 
 public class HasCardState extends AtmState{
+    private int attempts = 0;
+    private static final int MAX_ATTEMPTS = 3;
+
     @Override
     public void authenticateCard(AtmSystem atm, String pin) {
         if(atm.validatePin(pin)){
             atm.setState(new AuthenticatedState());
         }else{
-            System.out.println("HasCardState: authenticateCard(): Card authentication failed.");
-            atm.setState(new ExitState());
+            attempts++;
+            if(attempts < MAX_ATTEMPTS) {
+                System.out.println("HasCardState: authenticateCard(): Card authentication failed. Attempts remaining: " + (MAX_ATTEMPTS - attempts));
+            }else{
+                System.out.println("HasCardState: authenticateCard(): Maximum authentication attempts exceeded. Card will be ejected.");
+                atm.ejectCard();
+                atm.setState(new ExitState());
+            }
         }
     }
 }

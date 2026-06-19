@@ -1,22 +1,25 @@
 package org.example;
 
-import org.example.ChainOfReposnsibility.DispenserChain;
-import org.example.ChainOfReposnsibility.NoteDispenser100;
-import org.example.ChainOfReposnsibility.NoteDispenser500;
+import org.example.ChainOfResponsibility.DispenserChain;
+import org.example.ChainOfResponsibility.NoteDispenser100;
+import org.example.ChainOfResponsibility.NoteDispenser500;
 import org.example.State.AtmState;
 import org.example.State.IdleState;
+import java.math.BigDecimal;
 
 public class AtmSystem {
-    private BankService bankService;
+    private final BankService bankService;
     private AtmState state;
     private Card card;
-    private DispenserChain dispenserChain;
+    private final DispenserChain dispenserChain;
+    private static final int INITIAL_500_NOTE_COUNT = 50;
+    private static final int INITIAL_100_NOTE_COUNT = 50;
 
     public AtmSystem(BankService service){
         this.bankService = service;
         this.card = null;
         this.state = new IdleState();
-        dispenserChain = new NoteDispenser500(new NoteDispenser100(null, 50), 50);
+        dispenserChain = new NoteDispenser500(new NoteDispenser100(null, INITIAL_100_NOTE_COUNT), INITIAL_500_NOTE_COUNT);
     }
 
 
@@ -36,6 +39,7 @@ public class AtmSystem {
     }
 
     public boolean validatePin(String pin){
+        if(this.card == null) throw new IllegalStateException("AtmSystem: validatePin(): No card present.");
         return this.card.validatePin(pin);
     }
 
@@ -43,7 +47,8 @@ public class AtmSystem {
         this.card = null;
     }
 
-    public double getBalance(){
+    public BigDecimal getBalance(){
+        if(this.card == null) throw new IllegalStateException("AtmSystem: getBalance(): No card present.");
         return bankService.getBalance(card);
     }
 
@@ -52,6 +57,7 @@ public class AtmSystem {
     }
 
     public void deductAmount(int amount){
+        if(this.card == null) throw new IllegalStateException("AtmSystem: deductAmount(): No card present.");
         bankService.deductAmount(card, amount);
     }
 }
