@@ -6,10 +6,14 @@ public class HasCardState extends AtmState{
     private int attempts = 0;
     private static final int MAX_ATTEMPTS = 3;
 
+    HasCardState(AtmSystem atmSystem){
+        super(atmSystem);
+    }
+
     @Override
-    public void authenticateCard(AtmSystem atm, String pin) {
+    public void authenticateCard(String pin) {
         if(atm.validatePin(pin)){
-            atm.setState(new AuthenticatedState());
+            atm.setState(new AuthenticatedState(atm));
         }else{
             attempts++;
             if(attempts < MAX_ATTEMPTS) {
@@ -17,7 +21,7 @@ public class HasCardState extends AtmState{
             }else{
                 System.out.println("HasCardState: authenticateCard(): Maximum authentication attempts exceeded. Card will be ejected.");
                 atm.ejectCard();
-                atm.setState(new ExitState());
+                atm.setState(new ExitState(atm));
             }
         }
     }

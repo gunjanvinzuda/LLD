@@ -18,7 +18,7 @@ public class AtmSystem {
     public AtmSystem(BankService service){
         this.bankService = service;
         this.card = null;
-        this.state = new IdleState();
+        this.state = new IdleState(this);
         dispenserChain = new NoteDispenser500(new NoteDispenser100(null, INITIAL_100_NOTE_COUNT), INITIAL_500_NOTE_COUNT);
     }
 

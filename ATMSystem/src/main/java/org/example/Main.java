@@ -9,26 +9,26 @@ public class Main {
        AtmSystem system = new AtmSystem(bankService);
 
        //Check balance
-       system.getState().insertCard(system, "123456789012");
-       system.getState().authenticateCard(system, "1534");//Wrong pin
-       system.getState().authenticateCard(system, "1234");
-       system.getState().selectOperation(system, AtmOperation.CHECK_BALANCE);
-       system.getState().checkBalance(system);
-       system.getState().ejectCard(system);
+       system.getState().insertCard( "123456789012");
+       system.getState().authenticateCard( "1534");//Wrong pin
+       system.getState().authenticateCard( "1234");
+       system.getState().selectOperation( AtmOperation.CHECK_BALANCE);
+       system.getState().checkBalance();
+       system.getState().ejectCard();
 
        //Withdraw money
-        system.getState().insertCard(system, "123456789012");
-        system.getState().authenticateCard(system, "1234");
-        system.getState().selectOperation(system, AtmOperation.WITHDRAW);
-        system.getState().withdrawMoney(system, 9000);
-        system.getState().ejectCard(system);
+        system.getState().insertCard( "123456789012");
+        system.getState().authenticateCard( "1234");
+        system.getState().selectOperation( AtmOperation.WITHDRAW);
+        system.getState().withdrawMoney( 9000);
+        system.getState().ejectCard();
 
         //Check balance
-        system.getState().insertCard(system, "123456789012");
-        system.getState().authenticateCard(system, "1234");
-        system.getState().selectOperation(system, AtmOperation.CHECK_BALANCE);
-        system.getState().checkBalance(system);
-        system.getState().ejectCard(system);
+        system.getState().insertCard( "123456789012");
+        system.getState().authenticateCard( "1234");
+        system.getState().selectOperation( AtmOperation.CHECK_BALANCE);
+        system.getState().checkBalance();
+        system.getState().ejectCard();
 
     }
 }

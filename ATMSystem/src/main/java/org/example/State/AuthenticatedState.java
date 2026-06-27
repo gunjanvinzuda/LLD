@@ -5,12 +5,16 @@ import org.example.AtmSystem;
 
 public class AuthenticatedState extends AtmState{
 
+    AuthenticatedState(AtmSystem atm){
+        super(atm);
+    }
+
     @Override
-    public void selectOperation(AtmSystem atm, AtmOperation operation) {
+    public void selectOperation(AtmOperation operation) {
         switch (operation){
-            case CHECK_BALANCE -> atm.setState(new CheckBalanceState());
-            case WITHDRAW -> atm.setState(new WithdrawState());
-            default -> atm.setState(new ExitState());
+            case CHECK_BALANCE -> atm.setState(new CheckBalanceState(atm));
+            case WITHDRAW -> atm.setState(new WithdrawState(atm));
+            default -> atm.setState(new ExitState(atm));
         }
 
     }
